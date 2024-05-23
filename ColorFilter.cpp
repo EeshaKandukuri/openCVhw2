@@ -14,15 +14,58 @@ void ColorFilter::processImage(cv::Mat img) {
 }
 
 void ColorFilter::split() {
+    _chans = vector<cv::Mat>;
+    split(_frame, _chans);
 }
 
 void ColorFilter::showResult() {
+    //imshow("result", _frame);
+    waitKey(1);
+    //PROBLEM 2: B
+    //imshow("blue", _chans[0]);
+    //PROBLEM 2: G
+    //imshow("green", _chans[1]);
+    //PROBLEM 2: R
+    //imshow("red", _chans[2]);
+
+    //PROBLEM 3: Blue Subtraction
+    //imshow("blue sub", _chans[0]);
+    //PROBLEM 3: Green Subtraction
+    //imshow("green sub", _chans[1]);
+    //PROBLEM 3: Red Subtraction
+    //imshow("red sub", _chans[2]);
 }
 
-void ColorFilter::findBlue() {}
+void ColorFilter::findBlue() {
 
-void ColorFilter::findGreen() {}
+    //4.3.1
+    subtract(_chans[0], _chans[2], bMinusR);
 
-void ColorFilter::findRed() {}
+    //4.3.2
+    //SAVE FOR LATER
 
-void ColorFilter::findBGR() {}
+    //4.3.3
+    vector<cv::Mat> contours;
+    vector<cv:Vec4i> hierarchy;
+    findContours(_chans[0], contours, hierarchy, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
+    int highest = 0;
+    for (int i = 0; i < contours.size(); i++) {
+        if (contourArea(contours[i]) > contourArea(contours[highest])) {
+            highest = i;
+        }
+    }
+    cv::Mat _zeros = zeros();
+    drawContours(zeros, contours, highest, cv::Scalar(255), cv::LineTypes::FILLED, 8, hierachy);
+}
+
+void ColorFilter::findGreen() {
+    subtract(_chans[1], _chans[2], gMinusR);
+}
+
+void ColorFilter::findRed() {
+    subtract(_chans[2], _chans[0], rMinusB);
+}
+
+void ColorFilter::findBGR() {
+
+}
